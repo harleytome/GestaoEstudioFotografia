@@ -3,9 +3,10 @@ import mammoth
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, TemplateView, View
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import get_object_or_404, redirect
-from django.http import FileResponse, Http404
+from django.shortcuts import get_object_or_404, redirect, render
+from django.http import FileResponse, Http404, HttpResponseBadRequest
 from django.db import models
+from django.contrib import messages
 from apps.contratos.models import DimContrato
 from apps.contratos.forms import ContratoForm, ContratoStatusForm, RelatorioContratoForm
 from apps.ordens.models import FatoServico
@@ -146,3 +147,111 @@ class ContratoDownloadView(LoginRequiredMixin, View):
         )
         response['Content-Disposition'] = f'attachment; filename="{contrato.nome_arquivo}"'
         return response
+
+
+TEMPLATES_DIR = os.path.join(settings.BASE_DIR, 'templates_contratos')
+
+
+class TemplateListView(LoginRequiredMixin, View):
+    template_name = 'contratos/template_list.html'
+
+    def get_templates(self):
+        os.makedirs(TEMPLATES_DIR, exist_ok=True)
+        arquivos = []
+        for f in sorted(os.listdir(TEMPLATES_DIR)):
+            if f.endswith('.docx') and not f.startswith('._tmp_'):
+                arquivos.append(f)
+        return arquivos
+
+    def get(self, request):
+        return self._render(request)
+
+    def _render(self, request, erro=None, arquivo_conflito=None, tmp_arquivo=None):
+        return render(request, self.template_name, {
+            'templates': self.get_templates(),
+            'erro': erro,
+            'arquivo_conflito': arquivo_conflito,
+            'tmp_arquivo': tmp_arquivo,
+        })
+
+    def post(self, request):
+        sobrescrever = request.POST.get('sobrescrever') == '1'
+        tmp_arquivo = request.POST.get('tmp_arquivo', '')
+
+        if tmp_arquivo:
+            tmp_path = os.path.join(TEMPLATES_DIR, f'._tmp_{tmp_arquivo}')
+            destino = os.path.join(TEMPLATES_DIR, tmp_arquivo)
+
+            if sobrescrever and os.path.exists(tmp_path):
+                os.replace(tmp_path, destino)
+                messages.success(request, f'Template "{tmp_arquivo}" sobrescrito com sucesso.')
+                return redirect('template_list')
+
+            if os.path.exists(tmp_path):
+                os.remove(tmp_path)
+            return self._render(request, erro='Operação cancelada.')
+
+        arquivo = request.FILES.get('arquivo')
+        if not arquivo:
+            return self._render(request, erro='Selecione um arquivo para upload.')
+
+        if not arquivo.name.endswith('.docx'):
+            return self._render(request, erro='Apenas arquivos .docx são permitidos.')
+
+        destino = os.path.join(TEMPLATES_DIR, arquivo.name)
+
+        if os.path.exists(destino) and not sobrescrever:
+            tmp_path = os.path.join(TEMPLATES_DIR, f'._tmp_{arquivo.name}')
+            with open(tmp_path, 'wb+') as f:
+                for chunk in arquivo.chunks():
+                    f.write(chunk)
+            return self._render(request, arquivo_conflito=arquivo.name, tmp_arquivo=arquivo.name)
+
+        with open(destino, 'wb+') as f:
+            for chunk in arquivo.chunks():
+                f.write(chunk)
+
+        messages.success(request, f'Template "{arquivo.name}" salvo com sucesso.')
+        return redirect('template_list')
+
+
+class TemplateDocxView(LoginRequiredMixin, TemplateView):
+    template_name = 'contratos/template_view.html'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        filename = self.kwargs['filename']
+        filepath = os.path.join(TEMPLATES_DIR, filename)
+
+        if not os.path.exists(filepath):
+            ctx['erro'] = 'Arquivo não encontrado.'
+            return ctx
+
+        with open(filepath, 'rb') as f:
+            result = mammoth.convert_to_html(f)
+            ctx['html_content'] = result.value
+
+        ctx['filename'] = filename
+        return ctx
+
+
+class TemplateDownloadView(LoginRequiredMixin, View):
+    def get(self, request, filename):
+        filepath = os.path.join(TEMPLATES_DIR, filename)
+        if not os.path.exists(filepath):
+            raise Http404('Arquivo não encontrado.')
+        response = FileResponse(
+            open(filepath, 'rb'),
+            content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        )
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        return response
+
+
+class TemplateDeleteView(LoginRequiredMixin, View):
+    def post(self, request, filename):
+        filepath = os.path.join(TEMPLATES_DIR, filename)
+        if os.path.exists(filepath):
+            os.remove(filepath)
+            messages.success(request, f'Template "{filename}" removido.')
+        return redirect('template_list')

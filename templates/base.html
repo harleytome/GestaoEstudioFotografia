@@ -44,8 +44,11 @@
             <a href="{% url 'ordem_list' %}" class="{% if request.resolver_match.url_name == 'ordem_list' %}active{% endif %}">
                 <span class="icon">📋</span><span>Ordens de Serviço</span>
             </a>
-            <a href="{% url 'contrato_list' %}" class="{% if 'contratos' in request.path %}active{% endif %}">
+            <a href="{% url 'contrato_list' %}" class="{% if 'contratos' in request.path and 'templates' not in request.path %}active{% endif %}">
                 <span class="icon">📄</span><span>Contratos</span>
+            </a>
+            <a href="{% url 'template_list' %}" class="{% if 'templates' in request.path %}active{% endif %}">
+                <span class="icon">📝</span><span>Templates</span>
             </a>
             <a href="{% url 'theme_config' %}">
                 <span class="icon">🎨</span><span>Configurar Cores</span>

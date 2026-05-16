@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Templates de Contrato{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>Templates de Contrato</h1>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data" id="uploadForm">
+            {% csrf_token %}
+            <input type="hidden" name="sobrescrever" id="sobrescreverInput" value="0">
+            <input type="hidden" name="tmp_arquivo" id="tmpArquivoInput" value="{% if tmp_arquivo %}{{ tmp_arquivo }}{% endif %}">
+            <div class="form-row" style="align-items:end;">
+                <div class="form-group" style="flex:1;">
+                    <label>Fazer upload de novo template (.docx)</label>
+                    <input type="file" name="arquivo" id="fileInput" class="form-control" accept=".docx" required>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">📤 Upload</button>
+                </div>
+            </div>
+        </form>
+
+        {% if erro %}
+        <div class="alert alert-error" style="color:var(--danger-color);margin-bottom:15px;">{{ erro }}</div>
+        {% endif %}
+
+        {% if arquivo_conflito %}
+        <div class="alert alert-warning" style="margin-bottom:15px;">
+            <p>O arquivo <strong>{{ arquivo_conflito }}</strong> já existe. Deseja sobrescrevê-lo?</p>
+            <button type="button" class="btn btn-warning btn-sm" onclick="sobrescrever()">Sobrescrever</button>
+            <a href="{% url 'template_list' %}" class="btn btn-secondary btn-sm" onclick="return cancelarSobrescrita()">Cancelar</a>
+        </div>
+        <script>
+        function sobrescrever() {
+            document.getElementById('sobrescreverInput').value = '1';
+            document.getElementById('uploadForm').submit();
+        }
+        function cancelarSobrescrita() {
+            var tmpInput = document.getElementById('tmpArquivoInput');
+            if (tmpInput.value) {
+                var form = document.getElementById('uploadForm');
+                var input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'tmp_arquivo';
+                input.value = tmpInput.value;
+                form.appendChild(input);
+            }
+            return true;
+        }
+        </script>
+        {% endif %}
+
+        {% if templates %}
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr><th>Arquivo</th><th>Ações</th></tr>
+                </thead>
+                <tbody>
+                    {% for tpl in templates %}
+                    <tr>
+                        <td>{{ tpl }}</td>
+                        <td>
+                            <a href="{% url 'template_view' tpl %}" class="btn btn-sm btn-success" target="_blank">👁️ Ver</a>
+                            <a href="{% url 'template_download' tpl %}" class="btn btn-sm btn-primary">⬇ Download</a>
+                            <form method="post" action="{% url 'template_delete' tpl %}" style="display:inline;" onsubmit="return confirm('Excluir o template {{ tpl|escapejs }}?')">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-danger">🗑 Excluir</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state"><p>Nenhum template encontrado. Faça upload de um arquivo .docx.</p></div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
