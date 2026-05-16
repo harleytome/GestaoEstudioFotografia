@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Contrato #{{ contrato.nr_contrato }}{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>Contrato #{{ contrato.nr_contrato }}</h1>
+    <div>
+        <a href="{% url 'contrato_docx' contrato.nr_contrato %}" class="btn btn-success" target="_blank">📄 Visualizar conteúdo .docx</a>
+        <a href="{% url 'contrato_download' contrato.nr_contrato %}" class="btn btn-primary">⬇ Download .docx</a>
+        <a href="{% url 'contrato_status' contrato.nr_contrato %}" class="btn btn-warning">Alterar Status</a>
+        <a href="{% url 'contrato_list' %}" class="btn btn-secondary">Voltar</a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header"><h2>Detalhes do Contrato</h2></div>
+    <div class="card-body">
+        <div class="detail-grid">
+            <div class="detail-item"><label>Nº Contrato</label><span>{{ contrato.nr_contrato }}</span></div>
+            <div class="detail-item"><label>Ordem de Serviço</label><span>OS #{{ contrato.nr_ordem_servico.nr_ordem_servico }}</span></div>
+            <div class="detail-item"><label>Cliente</label><span>{{ contrato.nome_cliente }}</span></div>
+            <div class="detail-item"><label>Código Cliente</label><span>{{ contrato.cod_cliente.cod_cliente }}</span></div>
+            <div class="detail-item"><label>Data de Criação</label><span>{{ contrato.data_criacao|date:"d/m/Y H:i" }}</span></div>
+            <div class="detail-item"><label>Arquivo Gerado</label><span>{{ contrato.nome_arquivo }}</span></div>
+            <div class="detail-item"><label>Status</label><span>
+                {% if contrato.status_contrato == 'ATIVO' %}<span class="badge badge-success">Ativo</span>
+                {% elif contrato.status_contrato == 'CANCELADO' %}<span class="badge badge-danger">Cancelado</span>
+                {% elif contrato.status_contrato == 'FINALIZADO' %}<span class="badge badge-info">Finalizado</span>
+                {% endif %}
+            </span></div>
+        </div>
+    </div>
+</div>
+{% endblock %}

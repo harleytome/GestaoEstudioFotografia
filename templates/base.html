@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Gestão de Estúdio de Fotografia{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <style id="theme-override">
+        :root {
+            --bg-primary: {{ theme.bg_primary }};
+            --bg-secondary: {{ theme.bg_secondary }};
+            --text-primary: {{ theme.text_primary }};
+            --text-secondary: {{ theme.text_secondary }};
+            --accent-color: {{ theme.accent_color }};
+            --accent-hover: {{ theme.accent_hover }};
+            --sidebar-bg: {{ theme.sidebar_bg }};
+            --card-bg: {{ theme.card_bg }};
+            --border-color: {{ theme.border_color }};
+            --success-color: {{ theme.success_color }};
+            --danger-color: {{ theme.danger_color }};
+            --warning-color: {{ theme.warning_color }};
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    {% if user.is_authenticated %}
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>📸 Estúdio</h2>
+            <small>Gestão Fotografia</small>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="{% url 'cliente_list' %}" class="{% if 'clientes' in request.path %}active{% endif %}">
+                <span class="icon">👥</span><span>Clientes</span>
+            </a>
+            <a href="{% url 'tipo_servico_list' %}" class="{% if 'tipos-servico' in request.path %}active{% endif %}">
+                <span class="icon">🏷️</span><span>Tipos de Serviço</span>
+            </a>
+            <a href="{% url 'servico_list' %}" class="{% if request.resolver_match.url_name == 'servico_list' %}active{% endif %}">
+                <span class="icon">🛠️</span><span>Serviços</span>
+            </a>
+            <a href="{% url 'ordem_list' %}" class="{% if request.resolver_match.url_name == 'ordem_list' %}active{% endif %}">
+                <span class="icon">📋</span><span>Ordens de Serviço</span>
+            </a>
+            <a href="{% url 'contrato_list' %}" class="{% if 'contratos' in request.path %}active{% endif %}">
+                <span class="icon">📄</span><span>Contratos</span>
+            </a>
+            <a href="{% url 'theme_config' %}">
+                <span class="icon">🎨</span><span>Configurar Cores</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <a href="{% url 'logout' %}">
+                <span class="icon">🚪</span><span>Sair ({{ user.username }})</span>
+            </a>
+        </div>
+    </aside>
+    {% endif %}
+
+    <main class="main-content">
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

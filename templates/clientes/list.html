@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Clientes{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>Clientes</h1>
+    <a href="{% url 'cliente_create' %}" class="btn btn-primary">+ Novo Cliente</a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form class="search-bar" method="get">
+            <input type="text" name="q" placeholder="Buscar por nome, CPF, CNPJ ou código..." value="{{ request.GET.q }}" class="form-control" style="max-width:400px">
+            <button type="submit" class="btn btn-secondary">Buscar</button>
+            {% if request.GET.q %}<a href="{% url 'cliente_list' %}" class="btn btn-secondary">Limpar</a>{% endif %}
+        </form>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Nome</th>
+                        <th>CPF/CNPJ</th>
+                        <th>Tipo</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cliente in clientes %}
+                    <tr>
+                        <td>{{ cliente.cod_cliente }}</td>
+                        <td>{{ cliente.nome_completo|default:"-" }}</td>
+                        <td>{{ cliente.cpf|default:cliente.cnpj|default:"-" }}</td>
+                        <td>{% if cliente.tipo_pessoa == 'F' %}Física{% else %}Jurídica{% endif %}</td>
+                        <td>
+                            {% if cliente.suspenso %}
+                            <span class="badge badge-danger">Suspenso</span>
+                            {% else %}
+                            <span class="badge badge-success">Ativo</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'cliente_detail' cliente.cod_cliente %}" class="btn btn-sm btn-primary">Ver</a>
+                            <a href="{% url 'cliente_edit' cliente.cod_cliente %}" class="btn btn-sm btn-secondary">Editar</a>
+                            <a href="{% url 'cliente_suspender' cliente.cod_cliente %}" class="btn btn-sm {% if cliente.suspenso %}btn-success{% else %}btn-warning{% endif %}">
+                                {% if cliente.suspenso %}Reativar{% else %}Suspender{% endif %}
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="6"><div class="empty-state"><p>Nenhum cliente encontrado.</p></div></td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if page_obj.has_other_pages %}
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+            <a href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">&laquo;</a>
+            <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">&lsaquo;</a>
+            {% endif %}
+            <span class="current">{{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">&rsaquo;</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">&raquo;</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

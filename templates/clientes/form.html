@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}{% if object %}Editar Cliente{% else %}Novo Cliente{% endif %}{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>{% if object %}Editar Cliente #{{ object.cod_cliente }}{% else %}Novo Cliente{% endif %}</h1>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-row">
+                {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                    <small style="color:var(--danger-color)">{{ field.errors.0 }}</small>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Salvar</button>
+                <a href="{% url 'cliente_list' %}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

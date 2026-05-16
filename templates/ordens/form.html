@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{% if object %}Editar OS #{{ object.nr_ordem_servico }}{% else %}Nova Ordem de Serviço{% endif %}{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>{% if object %}Editar OS #{{ object.nr_ordem_servico }}{% else %}Nova Ordem de Serviço{% endif %}</h1>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="post" id="ordemForm">
+            {% csrf_token %}
+
+            <div class="form-row">
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label>{{ form.cod_cliente.label }}</label>
+                    <div class="input-group">
+                        {{ form.cod_cliente }}
+                        <button type="button" class="btn btn-secondary btn-search-client" onclick="openClientSearch()">
+                            🔍
+                        </button>
+                    </div>
+                    {% if form.cod_cliente.errors %}<small style="color:var(--danger-color)">{{ form.cod_cliente.errors.0 }}</small>{% endif %}
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>{{ form.cod_servico.label }}</label>
+                    {{ form.cod_servico }}
+                    {% if form.cod_servico.errors %}<small style="color:var(--danger-color)">{{ form.cod_servico.errors.0 }}</small>{% endif %}
+                </div>
+                <div class="form-group">
+                    <label>{{ form.data_servico.label }}</label>
+                    {{ form.data_servico }}
+                    {% if form.data_servico.errors %}<small style="color:var(--danger-color)">{{ form.data_servico.errors.0 }}</small>{% endif %}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>{{ form.descricao_servico.label }}</label>
+                {{ form.descricao_servico }}
+                {% if form.descricao_servico.errors %}<small style="color:var(--danger-color)">{{ form.descricao_servico.errors.0 }}</small>{% endif %}
+            </div>
+
+            <div class="form-group">
+                <label>{{ form.formas_pagamento.label }}</label>
+                {{ form.formas_pagamento }}
+                {% if form.formas_pagamento.errors %}<small style="color:var(--danger-color)">{{ form.formas_pagamento.errors.0 }}</small>{% endif %}
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>{{ form.valor_sugerido.label }}</label>
+                    {{ form.valor_sugerido }}
+                    {% if form.valor_sugerido.errors %}<small style="color:var(--danger-color)">{{ form.valor_sugerido.errors.0 }}</small>{% endif %}
+                </div>
+                <div class="form-group">
+                    <label>{{ form.status_ordem_servico.label }}</label>
+                    {{ form.status_ordem_servico }}
+                    {% if form.status_ordem_servico.errors %}<small style="color:var(--danger-color)">{{ form.status_ordem_servico.errors.0 }}</small>{% endif %}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>{{ form.observacao.label }}</label>
+                {{ form.observacao }}
+                {% if form.observacao.errors %}<small style="color:var(--danger-color)">{{ form.observacao.errors.0 }}</small>{% endif %}
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Salvar</button>
+                <a href="{% url 'ordem_list' %}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="clientSearchModal" class="modal-overlay" style="display:none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Buscar Cliente</h2>
+            <button type="button" class="btn btn-sm btn-secondary" onclick="closeClientSearch()">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="search-bar">
+                <input type="text" id="clientSearchInput" class="form-control" placeholder="Digite o nome do cliente..." oninput="searchClients()" autocomplete="off">
+            </div>
+            <div id="clientSearchResults">
+                <div class="empty-state"><p>Digite um nome para buscar.</p></div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeClientSearch()">Fechar</button>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/currency-mask.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var servicoField = document.getElementById('id_cod_servico');
+    var descricaoField = document.getElementById('id_descricao_servico');
+    var valorField = document.getElementById('id_valor_sugerido');
+
+    if (servicoField) {
+        servicoField.addEventListener('change', function() {
+            var servicoId = this.value;
+            if (servicoId) {
+                fetch('/servicos/api/' + servicoId + '/')
+                    .then(function(r) { return r.json(); })
+                    .then(function(data) {
+                        if (descricaoField) descricaoField.value = data.descricao_servico;
+                        if (valorField) {
+                            var v = parseFloat(data.valor_sugerido);
+                            if (!isNaN(v)) {
+                                valorField.value = v.toLocaleString('pt-BR', {
+                                    style: 'currency',
+                                    currency: 'BRL',
+                                });
+                            }
+                        }
+                    })
+                    .catch(function() {});
+            }
+        });
+    }
+});
+
+var searchTimeout = null;
+
+function searchClients() {
+    clearTimeout(searchTimeout);
+    var input = document.getElementById('clientSearchInput');
+    var results = document.getElementById('clientSearchResults');
+    var q = input.value.trim();
+
+    if (q.length < 1) {
+        results.innerHTML = '<div class="empty-state"><p>Digite um nome para buscar.</p></div>';
+        return;
+    }
+
+    searchTimeout = setTimeout(function() {
+        results.innerHTML = '<div class="empty-state"><p>Buscando...</p></div>';
+        fetch('/clientes/api/search/?q=' + encodeURIComponent(q))
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.length === 0) {
+                    results.innerHTML = '<div class="empty-state"><p>Nenhum cliente encontrado.</p></div>';
+                    return;
+                }
+                var html = '<table><thead><tr><th>Código</th><th>Nome</th><th>Ação</th></tr></thead><tbody>';
+                data.forEach(function(c) {
+                    html += '<tr>' +
+                        '<td>' + c.cod_cliente + '</td>' +
+                        '<td>' + c.nome_completo + '</td>' +
+                        '<td><button type="button" class="btn btn-sm btn-primary" onclick="selectClient(' + c.cod_cliente + ')">Selecionar</button></td>' +
+                        '</tr>';
+                });
+                html += '</tbody></table>';
+                results.innerHTML = html;
+            })
+            .catch(function() {
+                results.innerHTML = '<div class="empty-state"><p>Erro ao buscar clientes.</p></div>';
+            });
+    }, 300);
+}
+
+function selectClient(codCliente) {
+    var select = document.getElementById('id_cod_cliente');
+    for (var i = 0; i < select.options.length; i++) {
+        if (select.options[i].value == codCliente) {
+            select.value = codCliente;
+            break;
+        }
+    }
+    closeClientSearch();
+}
+
+function openClientSearch() {
+    document.getElementById('clientSearchModal').style.display = 'flex';
+    document.getElementById('clientSearchInput').value = '';
+    document.getElementById('clientSearchResults').innerHTML = '<div class="empty-state"><p>Digite um nome para buscar.</p></div>';
+    document.getElementById('clientSearchInput').focus();
+}
+
+function closeClientSearch() {
+    document.getElementById('clientSearchModal').style.display = 'none';
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeClientSearch();
+    }
+});
+</script>
+{% endblock %}

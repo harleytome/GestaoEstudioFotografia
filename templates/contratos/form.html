@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Novo Contrato{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>Novo Contrato</h1>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label>Ordem de Serviço</label>
+                <select name="nr_ordem_servico" class="form-control" required>
+                    <option value="">--- Selecione uma OS em Aberto ---</option>
+                    {% for os in ordens %}
+                    <option value="{{ os.nr_ordem_servico }}">
+                        OS #{{ os.nr_ordem_servico }} - {{ os.cod_cliente.nome_completo|default:"Sem cliente" }} - {{ os.descricao_servico|truncatechars:40 }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Template de Contrato (.docx)</label>
+                <select name="template_arquivo" class="form-control" required>
+                    <option value="">--- Selecione um template ---</option>
+                    {% for tpl in templates_disponiveis %}
+                    <option value="{{ tpl }}">{{ tpl }}</option>
+                    {% empty %}
+                    <option value="" disabled>Nenhum template encontrado. Adicione arquivos .docx em templates_contratos/</option>
+                    {% endfor %}
+                </select>
+                <small style="color:var(--text-secondary)">Coloque os arquivos .docx template no diretório <code>templates_contratos/</code> com campos no formato <code>{{ campo }}</code>.</small>
+            </div>
+
+            <div class="form-group">
+                <label>Status do Contrato</label>
+                <select name="status_contrato" class="form-control">
+                    <option value="ATIVO">Ativo</option>
+                    <option value="CANCELADO">Cancelado</option>
+                    <option value="FINALIZADO">Finalizado</option>
+                </select>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Gerar Contrato</button>
+                <a href="{% url 'contrato_list' %}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}OS #{{ ordem.nr_ordem_servico }}{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>Ordem de Serviço #{{ ordem.nr_ordem_servico }}</h1>
+    <div>
+        <a href="{% url 'ordem_edit' ordem.nr_ordem_servico %}" class="btn btn-primary">Editar</a>
+        <a href="{% url 'ordem_status' ordem.nr_ordem_servico %}" class="btn btn-warning">Alterar Status</a>
+        <a href="{% url 'contrato_create' %}" class="btn btn-success">Gerar Contrato</a>
+        <a href="{% url 'ordem_list' %}" class="btn btn-secondary">Voltar</a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header"><h2>Detalhes da OS</h2></div>
+    <div class="card-body">
+        <div class="detail-grid">
+            <div class="detail-item"><label>Nº OS</label><span>{{ ordem.nr_ordem_servico }}</span></div>
+            <div class="detail-item"><label>Cliente</label><span>{{ ordem.cod_cliente.nome_completo|default:"-" }} (#{{ ordem.cod_cliente.cod_cliente }})</span></div>
+            <div class="detail-item"><label>Serviço</label><span>{{ ordem.descricao_servico }}</span></div>
+            <div class="detail-item"><label>Data do Serviço</label><span>{{ ordem.data_servico|date:"d/m/Y H:i"|default:"-" }}</span></div>
+            <div class="detail-item"><label>Valor Sugerido</label><span>R$ {{ ordem.valor_sugerido|floatformat:2|default:"0,00" }}</span></div>
+            <div class="detail-item"><label>Formas de Pagamento</label><span>{{ ordem.formas_pagamento|default:"-" }}</span></div>
+            <div class="detail-item"><label>Observação</label><span>{{ ordem.observacao|default:"-" }}</span></div>
+            <div class="detail-item"><label>Status</label><span>
+                {% if ordem.status_ordem_servico == 'EM_ABERTO' %}<span class="badge badge-warning">Em Aberto</span>
+                {% elif ordem.status_ordem_servico == 'CANCELADO' %}<span class="badge badge-danger">Cancelado</span>
+                {% elif ordem.status_ordem_servico == 'EXECUTADO' %}<span class="badge badge-success">Executado</span>
+                {% endif %}
+            </span></div>
+        </div>
+    </div>
+</div>
+{% endblock %}

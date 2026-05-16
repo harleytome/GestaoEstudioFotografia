@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Contrato #{{ contrato.nr_contrato }}{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>Contrato #{{ contrato.nr_contrato }}</h1>
+    <div>
+        <a href="{% url 'contrato_detail' contrato.nr_contrato %}" class="btn btn-secondary">Voltar</a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body" style="padding:30px;max-width:800px;margin:0 auto;">
+        {% if erro %}
+            <div class="empty-state"><p>{{ erro }}</p></div>
+        {% else %}
+            {{ html_content|safe }}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

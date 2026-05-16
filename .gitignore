@@ -1,0 +1,12 @@
+.venv/
+*.pyc
+__pycache__/
+media/contratos/
+staticfiles/
+*.db
+.env
+.docx
+.png
+.sql
+.md
+

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Cliente #{{ cliente.cod_cliente }}{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>Cliente #{{ cliente.cod_cliente }} - {{ cliente.nome_completo|default:"Sem nome" }}</h1>
+    <div>
+        <a href="{% url 'cliente_edit' cliente.cod_cliente %}" class="btn btn-primary">Editar</a>
+        <a href="{% url 'cliente_suspender' cliente.cod_cliente %}" class="btn btn-warning">
+            {% if cliente.suspenso %}Reativar{% else %}Suspender{% endif %}
+        </a>
+        <a href="{% url 'cliente_list' %}" class="btn btn-secondary">Voltar</a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header"><h2>Dados do Cliente</h2></div>
+    <div class="card-body">
+        <div class="detail-grid">
+            <div class="detail-item"><label>Código</label><span>{{ cliente.cod_cliente }}</span></div>
+            <div class="detail-item"><label>Nome</label><span>{{ cliente.nome_completo|default:"-" }}</span></div>
+            <div class="detail-item"><label>Data de Cadastro</label><span>{{ cliente.data_cadastro|date:"d/m/Y H:i"|default:"-" }}</span></div>
+            <div class="detail-item"><label>Data de Nascimento</label><span>{{ cliente.data_nascimento|date:"d/m/Y"|default:"-" }}</span></div>
+            <div class="detail-item"><label>Tipo Pessoa</label><span>{% if cliente.tipo_pessoa == 'F' %}Física{% else %}Jurídica{% endif %}</span></div>
+            <div class="detail-item"><label>CPF</label><span>{{ cliente.cpf|default:"-" }}</span></div>
+            <div class="detail-item"><label>RG</label><span>{{ cliente.rg|default:"-" }}</span></div>
+            <div class="detail-item"><label>CNPJ</label><span>{{ cliente.cnpj|default:"-" }}</span></div>
+            <div class="detail-item"><label>Inscrição Estadual</label><span>{{ cliente.inscricao|default:"-" }}</span></div>
+            <div class="detail-item"><label>Endereço</label><span>{{ cliente.endereco|default:"-" }}, {{ cliente.numero|default:"-" }}</span></div>
+            <div class="detail-item"><label>Bairro</label><span>{{ cliente.bairro|default:"-" }}</span></div>
+            <div class="detail-item"><label>Complemento</label><span>{{ cliente.complemento|default:"-" }}</span></div>
+            <div class="detail-item"><label>Cidade/Estado</label><span>{{ cliente.cidade|default:"-" }}/{{ cliente.estado|default:"-" }}</span></div>
+            <div class="detail-item"><label>CEP</label><span>{{ cliente.cep|default:"-" }}</span></div>
+            <div class="detail-item"><label>Email</label><span>{{ cliente.email_contato|default:"-" }}</span></div>
+            <div class="detail-item"><label>Telefone</label><span>{{ cliente.telefone|default:"-" }}</span></div>
+            <div class="detail-item"><label>Celular</label><span>{{ cliente.celular|default:"-" }}</span></div>
+            <div class="detail-item"><label>Status</label><span>{% if cliente.suspenso %}<span class="badge badge-danger">Suspenso</span>{% else %}<span class="badge badge-success">Ativo</span>{% endif %}</span></div>
+            <div class="detail-item"><label>Mailing</label><span>{{ cliente.mailing|default:"-" }}</span></div>
+            <div class="detail-item"><label>Nos Conheceu</label><span>{{ cliente.nosconheceu|default:"-" }}</span></div>
+        </div>
+        {% if cliente.observacao %}
+        <div style="margin-top:15px;padding-top:15px;border-top:1px solid var(--border-color)">
+            <label style="font-size:0.8rem;color:var(--text-secondary)">Observação</label>
+            <p>{{ cliente.observacao }}</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

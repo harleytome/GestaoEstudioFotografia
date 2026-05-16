@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Tipos de Serviço{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>Tipos de Serviço</h1>
+    <a href="{% url 'tipo_servico_create' %}" class="btn btn-primary">+ Novo Tipo</a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr><th>Código</th><th>Descrição</th><th>Ações</th></tr>
+                </thead>
+                <tbody>
+                    {% for tipo in tipos %}
+                    <tr>
+                        <td>{{ tipo.cod_tipo_servico }}</td>
+                        <td>{{ tipo.descricao_tipo_servico|default:"-" }}</td>
+                        <td><a href="{% url 'tipo_servico_edit' tipo.cod_tipo_servico %}" class="btn btn-sm btn-secondary">Editar</a></td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="3"><div class="empty-state"><p>Nenhum tipo de serviço cadastrado.</p></div></td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

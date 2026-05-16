@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Configurar Cores{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>🎨 Configurar Cores do Tema</h1>
+</div>
+
+<div class="card">
+    <div class="card-header"><h2>Personalize as cores do sistema</h2></div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            <div class="color-picker-grid">
+                <div class="color-picker-item">
+                    <label>Fundo Principal</label>
+                    <input type="color" name="bg_primary" value="{{ theme.bg_primary }}">
+                </div>
+                <div class="color-picker-item">
+                    <label>Fundo Secundário</label>
+                    <input type="color" name="bg_secondary" value="{{ theme.bg_secondary }}">
+                </div>
+                <div class="color-picker-item">
+                    <label>Texto Principal</label>
+                    <input type="color" name="text_primary" value="{{ theme.text_primary }}">
+                </div>
+                <div class="color-picker-item">
+                    <label>Texto Secundário</label>
+                    <input type="color" name="text_secondary" value="{{ theme.text_secondary }}">
+                </div>
+                <div class="color-picker-item">
+                    <label>Cor de Destaque</label>
+                    <input type="color" name="accent_color" value="{{ theme.accent_color }}">
+                </div>
+                <div class="color-picker-item">
+                    <label>Destaque (Hover)</label>
+                    <input type="color" name="accent_hover" value="{{ theme.accent_hover }}">
+                </div>
+                <div class="color-picker-item">
+                    <label>Sidebar</label>
+                    <input type="color" name="sidebar_bg" value="{{ theme.sidebar_bg }}">
+                </div>
+                <div class="color-picker-item">
+                    <label>Cards</label>
+                    <input type="color" name="card_bg" value="{{ theme.card_bg }}">
+                </div>
+                <div class="color-picker-item">
+                    <label>Bordas</label>
+                    <input type="color" name="border_color" value="{{ theme.border_color }}">
+                </div>
+                <div class="color-picker-item">
+                    <label>Sucesso</label>
+                    <input type="color" name="success_color" value="{{ theme.success_color }}">
+                </div>
+                <div class="color-picker-item">
+                    <label>Erro</label>
+                    <input type="color" name="danger_color" value="{{ theme.danger_color }}">
+                </div>
+                <div class="color-picker-item">
+                    <label>Alerta</label>
+                    <input type="color" name="warning_color" value="{{ theme.warning_color }}">
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Salvar Cores</button>
+                <a href="{% url 'ordem_list' %}" class="btn btn-secondary">Voltar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
