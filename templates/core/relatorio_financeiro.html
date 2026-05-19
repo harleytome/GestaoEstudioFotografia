@@ -31,6 +31,7 @@
                     <th>Data de Criação</th>
                     <th>Cliente</th>
                     <th>Descrição do Serviço</th>
+                    <th>Nº NF</th>
                     <th>Status</th>
                     <th style="text-align:right">Valor Sugerido</th>
                 </tr>
@@ -44,18 +45,19 @@
                     <td>{{ c.data_criacao|date:"d/m/Y H:i" }}</td>
                     <td>{{ c.nome_cliente }}</td>
                     <td>{{ c.nr_ordem_servico.descricao_servico }}</td>
+                    <td>{{ c.nr_ordem_servico.nf|default:"-" }}</td>
                     <td>{% with status=c.nr_ordem_servico.status_ordem_servico %}<span class="badge {% if status == 'EM_ABERTO' %}badge-warning{% elif status == 'EXECUTADO' %}badge-success{% elif status == 'CANCELADO' %}badge-danger{% endif %}">{{ c.nr_ordem_servico.get_status_ordem_servico_display }}</span>{% endwith %}</td>
                     <td style="text-align:right">R$ {{ c.nr_ordem_servico.valor_sugerido|floatformat:2 }}</td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="8" class="empty-state">Nenhum registro encontrado no período selecionado.</td>
+                    <td colspan="9" class="empty-state">Nenhum registro encontrado no período selecionado.</td>
                 </tr>
                 {% endfor %}
             </tbody>
             <tfoot>
                 <tr>
-                    <td colspan="7" style="text-align:right;font-weight:700">Total:</td>
+                    <td colspan="8" style="text-align:right;font-weight:700">Total:</td>
                     <td style="text-align:right;font-weight:700">R$ {{ total|floatformat:2 }}</td>
                 </tr>
             </tfoot>
