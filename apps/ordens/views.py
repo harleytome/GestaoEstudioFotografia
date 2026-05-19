@@ -68,3 +68,13 @@ class OrdemStatusView(LoginRequiredMixin, UpdateView):
     form_class = OrdemStatusForm
     template_name = 'ordens/change_status.html'
     success_url = reverse_lazy('ordem_list')
+
+    def form_valid(self, form):
+        if form.cleaned_data['status_ordem_servico'] == 'EXECUTADO':
+            if not form.cleaned_data.get('nf'):
+                form.add_error('nf', 'Informe o número da nota fiscal.')
+                return self.form_invalid(form)
+        self.object = form.save()
+        if self.object.status_ordem_servico == 'EXECUTADO':
+            self.object.dimcontrato_set.all().update(status_contrato='FINALIZADO')
+        return super().form_valid(form)

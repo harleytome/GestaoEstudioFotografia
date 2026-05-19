@@ -62,10 +62,17 @@
                 </div>
             </div>
 
-            <div class="form-group">
-                <label>{{ form.observacao.label }}</label>
-                {{ form.observacao }}
-                {% if form.observacao.errors %}<small style="color:var(--danger-color)">{{ form.observacao.errors.0 }}</small>{% endif %}
+            <div class="form-row">
+                <div class="form-group">
+                    <label>{{ form.nf.label }}</label>
+                    {{ form.nf }}
+                    {% if form.nf.errors %}<small style="color:var(--danger-color)">{{ form.nf.errors.0 }}</small>{% endif %}
+                </div>
+                <div class="form-group">
+                    <label>{{ form.observacao.label }}</label>
+                    {{ form.observacao }}
+                    {% if form.observacao.errors %}<small style="color:var(--danger-color)">{{ form.observacao.errors.0 }}</small>{% endif %}
+                </div>
             </div>
 
             <div class="form-actions">

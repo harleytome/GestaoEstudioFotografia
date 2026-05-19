@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block title %}Relatório de Compromissos{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>Relatório de Compromissos</h1>
+</div>
+
+<form class="search-bar" method="get">
+    <label for="id_data_inicial" style="font-size:0.85rem;color:var(--text-secondary)">Data Inicial:</label>
+    {{ form.data_inicial }}
+    <label for="id_data_final" style="font-size:0.85rem;color:var(--text-secondary)">Data Final:</label>
+    {{ form.data_final }}
+    <button type="submit" class="btn btn-primary">Filtrar</button>
+    {% if request.GET.data_inicial or request.GET.data_final %}
+    <a href="{% url 'relatorio_compromissos' %}" class="btn btn-secondary">Limpar</a>
+    {% endif %}
+</form>
+
+<div class="calendar-legend">
+    <span class="legend-item"><span class="status-dot dot-open"></span> Em Aberto</span>
+    <span class="legend-item"><span class="status-dot dot-executed"></span> Executado</span>
+    <span class="legend-item"><span class="status-dot dot-cancelled"></span> Cancelado</span>
+</div>
+
+{% for month in months_data %}
+<div class="card">
+    <div class="card-header">
+        <h2>{{ month.name }} {{ month.year }}</h2>
+    </div>
+    <div class="card-body">
+        <table class="calendar-table">
+            <thead>
+                <tr>
+                    <th>Dom</th>
+                    <th>Seg</th>
+                    <th>Ter</th>
+                    <th>Qua</th>
+                    <th>Qui</th>
+                    <th>Sex</th>
+                    <th>Sáb</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for week in month.weeks %}
+                <tr>
+                    {% for day_data in week %}
+                    <td class="{% if day_data.day == 0 %}outside{% endif %}{% if day_data.servicos %} has-services{% endif %}"
+                        {% if day_data.servicos %}onclick="showDayServices(this)" data-date="{{ day_data.date|date:'Y-m-d' }}"{% endif %}>
+                        {% if day_data.day != 0 %}
+                        <div class="day-number">{{ day_data.day }}</div>
+                        {% if day_data.servicos %}
+                        <div class="day-indicators">
+                            {% if day_data.servicos.EM_ABERTO %}
+                            <span class="badge badge-open" title="Em Aberto: {{ day_data.servicos.EM_ABERTO|length }}">{{ day_data.servicos.EM_ABERTO|length }}</span>
+                            {% endif %}
+                            {% if day_data.servicos.EXECUTADO %}
+                            <span class="badge badge-executed" title="Executado: {{ day_data.servicos.EXECUTADO|length }}">{{ day_data.servicos.EXECUTADO|length }}</span>
+                            {% endif %}
+                            {% if day_data.servicos.CANCELADO %}
+                            <span class="badge badge-cancelled" title="Cancelado: {{ day_data.servicos.CANCELADO|length }}">{{ day_data.servicos.CANCELADO|length }}</span>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        {% endif %}
+                    </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% empty %}
+<div class="card">
+    <div class="card-body">
+        <p class="empty-state">Nenhum compromisso encontrado no período selecionado.</p>
+    </div>
+</div>
+{% endfor %}
+
+<div class="modal-overlay" id="dayModal" onclick="closeDayModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <h2 id="modalTitle">Compromissos</h2>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeDayModal()">Fechar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const dayServices = {{ day_services_json|safe }};
+
+function showDayServices(el) {
+    const dateStr = el.dataset.date;
+    const services = dayServices[dateStr];
+    if (!services) return;
+
+    const [y, m, d] = dateStr.split('-');
+    const months = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+                    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+    document.getElementById('modalTitle').textContent = parseInt(d) + ' de ' + months[parseInt(m)-1] + ' de ' + y;
+
+    const statusClasses = {'EM_ABERTO': 'badge-open', 'EXECUTADO': 'badge-executed', 'CANCELADO': 'badge-cancelled'};
+    let html = '<table class="calendar-detail-table"><thead><tr><th>OS</th><th>Cliente</th><th>Status</th></tr></thead><tbody>';
+    services.forEach(function(svc) {
+        html += '<tr><td>#' + svc.nr + '</td><td>' + svc.cliente + '</td><td><span class="badge ' + (statusClasses[svc.status] || '') + '">' + svc.status_display + '</span></td></tr>';
+    });
+    html += '</tbody></table>';
+    document.getElementById('modalBody').innerHTML = html;
+
+    document.getElementById('dayModal').style.display = 'flex';
+}
+
+function closeDayModal(e) {
+    if (e && e.target !== e.currentTarget) return;
+    document.getElementById('dayModal').style.display = 'none';
+}
+</script>
+{% endblock %}

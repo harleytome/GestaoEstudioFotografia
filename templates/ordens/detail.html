@@ -20,6 +20,7 @@
             <div class="detail-item"><label>Serviço</label><span>{{ ordem.descricao_servico }}</span></div>
             <div class="detail-item"><label>Data do Serviço</label><span>{{ ordem.data_servico|date:"d/m/Y H:i"|default:"-" }}</span></div>
             <div class="detail-item"><label>Valor Sugerido</label><span>R$ {{ ordem.valor_sugerido|floatformat:2|default:"0,00" }}</span></div>
+            <div class="detail-item"><label>Nota Fiscal (NF)</label><span>{{ ordem.nf|default:"-" }}</span></div>
             <div class="detail-item"><label>Formas de Pagamento</label><span>{{ ordem.formas_pagamento|default:"-" }}</span></div>
             <div class="detail-item"><label>Observação</label><span>{{ ordem.observacao|default:"-" }}</span></div>
             <div class="detail-item"><label>Status</label><span>

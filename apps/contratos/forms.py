@@ -10,9 +10,26 @@ class ContratoForm(forms.ModelForm):
 
 
 class ContratoStatusForm(forms.ModelForm):
+    nf = forms.CharField(
+        required=False,
+        max_length=100,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'style': 'max-width:300px',
+            'placeholder': 'Número da Nota Fiscal',
+        }),
+        label='Nota Fiscal',
+    )
+
     class Meta:
         model = DimContrato
         fields = ['status_contrato']
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if cleaned_data.get('status_contrato') == 'FINALIZADO' and not cleaned_data.get('nf'):
+            self.add_error('nf', 'Informe o número da nota fiscal para finalizar.')
+        return cleaned_data
 
 
 class RelatorioContratoForm(forms.Form):

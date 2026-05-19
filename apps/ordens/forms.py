@@ -64,4 +64,11 @@ class OrdemForm(forms.ModelForm):
 class OrdemStatusForm(forms.ModelForm):
     class Meta:
         model = FatoServico
-        fields = ['status_ordem_servico']
+        fields = ['status_ordem_servico', 'nf']
+        widgets = {
+            'nf': forms.TextInput(attrs={
+                'class': 'form-control',
+                'style': 'max-width:300px',
+                'placeholder': 'Número da Nota Fiscal',
+            }),
+        }

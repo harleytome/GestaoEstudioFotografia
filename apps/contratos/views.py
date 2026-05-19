@@ -129,6 +129,7 @@ class ContratoStatusView(LoginRequiredMixin, UpdateView):
         if novo_status == 'CANCELADO':
             ordem.status_ordem_servico = 'CANCELADO'
         elif novo_status == 'FINALIZADO':
+            ordem.nf = form.cleaned_data['nf']
             ordem.status_ordem_servico = 'EXECUTADO'
 
         ordem.save()

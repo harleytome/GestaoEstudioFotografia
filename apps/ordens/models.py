@@ -22,12 +22,14 @@ class FatoServico(models.Model):
         verbose_name='Serviço'
     )
     data_servico = models.DateTimeField(null=True, blank=True)
+    data_os = models.DateTimeField(auto_now_add=True, null=True, verbose_name='Data da OS')
     descricao_servico = models.CharField(max_length=200)
     formas_pagamento = models.CharField(max_length=200)
     valor_sugerido = models.FloatField(null=True, blank=True)
     status_ordem_servico = models.CharField(
         max_length=100, choices=STATUS_CHOICES, default='EM_ABERTO'
     )
+    nf = models.CharField(max_length=100, null=True, blank=True, verbose_name='Nota Fiscal')
     observacao = models.CharField(max_length=200, null=True, blank=True)
 
     class Meta:

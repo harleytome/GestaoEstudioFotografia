@@ -172,6 +172,13 @@ table tbody tr:hover {
     background-color: rgba(255,255,255,0.03);
 }
 
+table tfoot td {
+    padding: 12px 15px;
+    border-top: 2px solid var(--border-color);
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
 .badge {
     display: inline-block;
     padding: 3px 10px;
@@ -526,3 +533,195 @@ table tbody tr:hover {
         grid-template-columns: 1fr;
     }
 }
+
+/* === Menu expansível === */
+.menu-group {
+    user-select: none;
+}
+
+.menu-toggle {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+}
+
+.menu-toggle .menu-arrow {
+    font-size: 0.65rem;
+    transition: transform 0.3s ease;
+    margin-left: auto;
+}
+
+.menu-group.open .menu-toggle .menu-arrow {
+    transform: rotate(90deg);
+}
+
+.sub-menu {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.menu-group.open .sub-menu {
+    max-height: 200px;
+}
+
+.sub-menu a {
+    padding-left: 45px !important;
+    font-size: 0.85rem;
+}
+
+@media (max-width: 768px) {
+    .sub-menu a span:last-child {
+        display: none;
+    }
+}
+
+/* === Calendário de Compromissos === */
+.calendar-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.calendar-table th {
+    padding: 8px 4px;
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    border-bottom: 2px solid var(--border-color);
+}
+
+.calendar-table td {
+    padding: 6px 4px;
+    text-align: center;
+    vertical-align: top;
+    border: 1px solid var(--border-color);
+    height: 70px;
+    width: 14.28%;
+    position: relative;
+}
+
+.calendar-table td.outside {
+    background-color: transparent;
+    border-color: transparent;
+}
+
+.calendar-table td.has-services {
+    cursor: pointer;
+    background-color: rgba(255,255,255,0.02);
+}
+
+.calendar-table td.has-services:hover {
+    background-color: rgba(255,255,255,0.06);
+}
+
+.calendar-table .day-number {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.calendar-table .day-indicators {
+    display: flex;
+    gap: 3px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.calendar-table .badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 5px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1;
+}
+
+.calendar-table .badge-open {
+    background-color: var(--warning-color);
+    color: #000;
+}
+
+.calendar-table .badge-executed {
+    background-color: var(--success-color);
+}
+
+.calendar-table .badge-cancelled {
+    background-color: var(--danger-color);
+}
+
+.calendar-legend {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+}
+
+.status-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.dot-open { background-color: var(--warning-color); }
+.dot-executed { background-color: var(--success-color); }
+.dot-cancelled { background-color: var(--danger-color); }
+
+.calendar-detail-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.calendar-detail-table th {
+    padding: 10px 12px;
+    text-align: left;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    border-bottom: 2px solid var(--border-color);
+}
+
+.calendar-detail-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.9rem;
+}
+
+.calendar-detail-table tr:last-child td {
+    border-bottom: none;
+}
+
+.calendar-detail-table .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #fff;
+}
+
+.calendar-detail-table .badge-open { background-color: var(--warning-color); color: #000; }
+.calendar-detail-table .badge-executed { background-color: var(--success-color); }
+.calendar-detail-table .badge-cancelled { background-color: var(--danger-color); }

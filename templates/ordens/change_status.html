@@ -26,6 +26,13 @@
                     <option value="EXECUTADO" {% if object.status_ordem_servico == 'EXECUTADO' %}selected{% endif %}>Executado</option>
                 </select>
             </div>
+            <div class="form-group" id="nf-field" style="display:none">
+                <label>Número da Nota Fiscal</label>
+                <input type="text" name="nf" id="id_nf" class="form-control" style="max-width:300px" placeholder="Número da Nota Fiscal" value="{{ form.nf.value|default:'' }}">
+                {% if form.nf.errors %}
+                <div class="alert alert-error">{{ form.nf.errors }}</div>
+                {% endif %}
+            </div>
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">Salvar</button>
                 <a href="{% url 'ordem_list' %}" class="btn btn-secondary">Cancelar</a>
@@ -33,4 +40,16 @@
         </form>
     </div>
 </div>
+
+<script>
+(function() {
+    var sel = document.querySelector('[name="status_ordem_servico"]');
+    var nf = document.getElementById('nf-field');
+    function toggle() {
+        nf.style.display = sel.value === 'EXECUTADO' ? 'block' : 'none';
+    }
+    sel.addEventListener('change', toggle);
+    toggle();
+})();
+</script>
 {% endblock %}

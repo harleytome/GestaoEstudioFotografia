@@ -23,16 +23,18 @@
         <div class="table-container">
             <table>
                 <thead>
-                    <tr><th>Nº OS</th><th>Cliente</th><th>Serviço</th><th>Data</th><th>Valor</th><th>Status</th><th>Ações</th></tr>
+                    <tr><th>Nº OS</th><th>Data OS</th><th>Cliente</th><th>Serviço</th><th>Data Serviço</th><th>Valor</th><th>Nº NF</th><th>Status</th><th>Ações</th></tr>
                 </thead>
                 <tbody>
                     {% for ordem in ordens %}
                     <tr>
                         <td>{{ ordem.nr_ordem_servico }}</td>
+                        <td>{{ ordem.data_os|date:"d/m/Y H:i"|default:"-" }}</td>
                         <td>{{ ordem.cod_cliente.nome_completo|default:"-" }}</td>
                         <td>{{ ordem.descricao_servico|truncatechars:40 }}</td>
                         <td>{{ ordem.data_servico|date:"d/m/Y H:i"|default:"-" }}</td>
                         <td>R$ {{ ordem.valor_sugerido|floatformat:2|default:"0,00" }}</td>
+                        <td>{{ ordem.nf|default:"-" }}</td>
                         <td>
                             {% if ordem.status_ordem_servico == 'EM_ABERTO' %}
                             <span class="badge badge-warning">Em Aberto</span>
@@ -49,7 +51,7 @@
                         </td>
                     </tr>
                     {% empty %}
-                    <tr><td colspan="7"><div class="empty-state"><p>Nenhuma ordem de serviço encontrada.</p></div></td></tr>
+                    <tr><td colspan="9"><div class="empty-state"><p>Nenhuma ordem de serviço encontrada.</p></div></td></tr>
                     {% endfor %}
                 </tbody>
             </table>

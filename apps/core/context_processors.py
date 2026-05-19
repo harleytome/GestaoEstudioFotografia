@@ -1,3 +1,6 @@
+CSS_VERSION = "7"
+
+
 def theme_colors(request):
     if not request.user.is_authenticated:
         return {}
@@ -19,4 +22,4 @@ def theme_colors(request):
     for key in defaults:
         if key not in colors:
             colors[key] = defaults[key]
-    return {'theme': colors}
+    return {'theme': colors, 'css_version': CSS_VERSION}

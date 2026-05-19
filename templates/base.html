@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Gestão de Estúdio de Fotografia{% endblock %}</title>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}?v={{ css_version }}">
     <style id="theme-override">
         :root {
             --bg-primary: {{ theme.bg_primary }};
@@ -50,6 +50,20 @@
             <a href="{% url 'template_list' %}" class="{% if 'templates' in request.path %}active{% endif %}">
                 <span class="icon">📝</span><span>Templates</span>
             </a>
+            <div class="menu-group">
+                <a href="#" class="menu-toggle" onclick="toggleMenu(this)">
+                    <span class="icon">📊</span><span>Relatórios</span>
+                    <span class="menu-arrow">▶</span>
+                </a>
+                <div class="sub-menu">
+                    <a href="{% url 'relatorio_compromissos' %}" class="{% if 'relatorios/compromissos' in request.path %}active{% endif %}">
+                        <span class="icon">📅</span><span>Compromissos</span>
+                    </a>
+                    <a href="{% url 'relatorio_financeiro' %}" class="{% if 'relatorios/financeiro' in request.path %}active{% endif %}">
+                        <span class="icon">💰</span><span>Financeiro</span>
+                    </a>
+                </div>
+            </div>
             <a href="{% url 'theme_config' %}">
                 <span class="icon">🎨</span><span>Configurar Cores</span>
             </a>
@@ -70,5 +84,15 @@
         {% endif %}
         {% block content %}{% endblock %}
     </main>
+    <script>
+    function toggleMenu(el) {
+        el.parentElement.classList.toggle('open');
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.sub-menu a.active').forEach(function(link) {
+            link.closest('.menu-group').classList.add('open');
+        });
+    });
+    </script>
 </body>
 </html>
