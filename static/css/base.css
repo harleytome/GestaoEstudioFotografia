@@ -86,12 +86,26 @@ a:hover {
     border-top: 1px solid rgba(255,255,255,0.1);
 }
 
-.sidebar-footer a {
+.sidebar-footer a,
+.sidebar-footer .logout-btn {
     color: rgba(255,255,255,0.7);
     display: flex;
     align-items: center;
     gap: 10px;
     font-size: 0.9rem;
+}
+
+.sidebar-footer .logout-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    width: 100%;
+    text-align: left;
+}
+
+.sidebar-footer .logout-form {
+    display: block;
 }
 
 .main-content {

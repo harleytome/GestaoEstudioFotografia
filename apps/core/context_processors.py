@@ -1,4 +1,4 @@
-CSS_VERSION = "7"
+CSS_VERSION = "8"
 
 
 def theme_colors(request):
